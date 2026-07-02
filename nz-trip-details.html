@@ -60,7 +60,7 @@
 
     .hero {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 360px;
+      grid-template-columns: minmax(0, 1fr);
       gap: 28px;
       align-items: end;
       padding-bottom: 28px;
@@ -95,42 +95,6 @@
       margin: 18px 0 0;
       color: var(--ink-soft);
       font-size: 1.08rem;
-    }
-
-    .hero-aside {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 20px;
-      box-shadow: var(--shadow-soft);
-    }
-
-    .hero-aside h2 {
-      margin: 0 0 10px;
-      font-size: 1.25rem;
-    }
-
-    .price {
-      margin: 0;
-      font-family: "Fraunces", Georgia, serif;
-      font-size: 2.35rem;
-      line-height: 1;
-      font-weight: 700;
-      color: var(--teal-deep);
-    }
-
-    .price-note {
-      margin: 8px 0 0;
-      color: var(--muted);
-      font-size: .9rem;
-    }
-
-    .source-note {
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid var(--line-soft);
-      color: var(--muted);
-      font-size: .82rem;
     }
 
     .stats {
@@ -530,7 +494,6 @@
 
     @media (max-width: 1060px) {
       .hero, .two-col, .stay-grid, .detail-grid { grid-template-columns: 1fr; }
-      .hero-aside { max-width: 520px; }
       .stats { grid-template-columns: repeat(3, 1fr); }
     }
 
@@ -619,7 +582,7 @@
 
     @media print {
       body { background: #fff; }
-      .panel, .day-card, .stay-card, .detail-card, .hero-aside, .stats { box-shadow: none; }
+      .panel, .day-card, .stay-card, .detail-card, .stats { box-shadow: none; }
       #map { height: 520px; }
       a { color: var(--ink); text-decoration: none; }
     }
@@ -629,17 +592,10 @@
   <main class="page">
     <header class="hero">
       <div>
-        <p class="eyebrow">Southern Crossings proposal - prepared for Kira Skaggs and Rahul Mitra</p>
+        <p class="eyebrow">Southern Crossings itinerary - prepared for Kira Skaggs and Rahul Mitra</p>
         <h1>New Zealand trip details</h1>
         <p class="subtitle">A 15-night spring itinerary from Auckland to Queenstown, the Ahuriri Valley, Arthur's Pass, Taupo, and a final Auckland night before departure.</p>
       </div>
-
-      <aside class="hero-aside" aria-label="Proposal pricing">
-        <h2>Land-only proposal</h2>
-        <p class="price">NZD $101,800</p>
-        <p class="price-note">For two travelers, double/twin share. The email estimates this at approximately USD $56,200 total, or NZD $50,900 per person.</p>
-        <p class="source-note">Source: "Skaggs - NZ Proposal - September 2026" email from Southern Crossings, dated June 29, 2026, and attached 31-page itinerary PDF.</p>
-      </aside>
     </header>
 
     <section class="stats" aria-label="Trip quick facts">
@@ -688,7 +644,7 @@
           <span><b style="background:#77628a">4</b>Taupo - Huka Lodge, 3 nights</span>
           <span><b style="background:#2d6247">5</b>Auckland - Park Hyatt, 1 night</span>
         </div>
-        <p class="map-foot">Pins are approximate and follow the proposal routing: Auckland arrival, Queenstown, The Lindis, Flockhill, Christchurch flight connection, Rotorua, Huka Lodge in Taupo, and Auckland departure.</p>
+        <p class="map-foot">Pins are approximate and follow the itinerary routing: Auckland arrival, Queenstown, The Lindis, Flockhill, Christchurch flight connection, Rotorua, Huka Lodge in Taupo, and Auckland departure.</p>
       </article>
 
       <aside class="panel panel-pad">
@@ -717,7 +673,7 @@
     <section class="section" aria-labelledby="summary-heading">
       <div class="section-head">
         <h2 id="summary-heading">Stay Summary</h2>
-        <p>Accommodation, dates, room types, meals, and night count from the proposal.</p>
+        <p>Accommodation, dates, room types, meals, and night count from the itinerary.</p>
       </div>
       <div class="summary-table-wrap">
         <table>
@@ -791,10 +747,10 @@
           </div>
           <div>
             <h3>Arrive Auckland, fly to Queenstown</h3>
-            <p>Southern Crossings meets you airside at Auckland International Airport, assists with customs and luggage, and transfers you by private vehicle to the domestic terminal for the Auckland to Queenstown flight. The flight cost is not included.</p>
-            <p>On arrival in Queenstown, collect a full-size automatic SUV rental vehicle with daily insurance, unlimited kilometres, loss damage waiver, and one-way fee. Drive about 20 minutes to ROKI Collection Queenstown.</p>
+            <p>Southern Crossings meets you airside at Auckland International Airport, assists with customs and luggage, and transfers you by private vehicle to the domestic terminal for the Auckland to Queenstown flight.</p>
+            <p>On arrival in Queenstown, collect a full-size automatic SUV rental vehicle with daily insurance, unlimited kilometres, and loss damage waiver. Drive about 20 minutes to ROKI Collection Queenstown.</p>
             <div class="chips">
-              <span class="chip clay">Domestic flight not included</span>
+              <span class="chip clay">Auckland to Queenstown flight</span>
               <span class="chip">SUV rental begins</span>
               <span class="chip gold">ROKI - 4 nights</span>
             </div>
@@ -826,10 +782,10 @@
           <div>
             <h3>Glenorchy wilderness jet boat</h3>
             <p>Drive independently to Glenorchy, about 45 minutes from Queenstown, for a shared wilderness jet boat excursion into the braided glacier-fed rivers near Mt Aspiring National Park.</p>
-            <p>The activity includes briefing/check-in and about two hours on the water, with guides covering local history, the Greenstone Trail, and Maori legends. If conditions allow, there may be a brief walk. Lunch in Glenorchy is paid directly.</p>
+            <p>The activity includes briefing/check-in and about two hours on the water, with guides covering local history, the Greenstone Trail, and Maori legends. If conditions allow, there may be a brief walk, with time for lunch in Glenorchy.</p>
             <div class="chips">
               <span class="chip">Approx. 2 hr 30 min activity</span>
-              <span class="chip clay">Lunch paid directly</span>
+              <span class="chip clay">Lunch in Glenorchy</span>
               <span class="chip">45 min drive each way</span>
             </div>
           </div>
@@ -989,7 +945,7 @@
           </div>
           <div>
             <h3>Guided Lake Coleridge horse trek</h3>
-            <p>Journey to Lake Coleridge for a guided horseback experience through mountain and farmland landscapes. The proposal notes traditional Western or Australian stock saddles and a high-country riding feel.</p>
+            <p>Journey to Lake Coleridge for a guided horseback experience through mountain and farmland landscapes. The itinerary notes traditional Western or Australian stock saddles and a high-country riding feel.</p>
             <div class="chips">
               <span class="chip">Approx. 7 hr total</span>
               <span class="chip">Includes approx. 2 hr driving</span>
@@ -1005,7 +961,7 @@
           </div>
           <div>
             <h3>Drive to Christchurch, fly to Rotorua, drive to Taupo</h3>
-            <p>Drive through the Southern Alps from Arthur's Pass to Christchurch Airport, about 1 hour 30 minutes, and return the rental vehicle before the flight to Rotorua. The Christchurch to Rotorua flight cost is not included.</p>
+            <p>Drive through the Southern Alps from Arthur's Pass to Christchurch Airport, about 1 hour 30 minutes, and return the rental vehicle before the Christchurch to Rotorua flight.</p>
             <ul>
               <li>10:10am suggested check-in.</li>
               <li>11:10am depart Christchurch on Air New Zealand flight NZ5782.</li>
@@ -1013,7 +969,7 @@
             </ul>
             <p>Collect another full-size automatic SUV rental vehicle and drive about one hour to Huka Lodge in Taupo. Check in for three nights in a King Lodge Suite with Fireplace, including pre-dinner drinks, dinner, and breakfast.</p>
             <div class="chips">
-              <span class="chip clay">Domestic flight not included</span>
+              <span class="chip clay">Christchurch to Rotorua flight</span>
               <span class="chip">Second SUV rental begins</span>
               <span class="chip gold">Huka Lodge - 3 nights</span>
             </div>
@@ -1096,7 +1052,7 @@
             <p>Drive to Auckland International Airport, about 45 minutes, return the rental vehicle, and depart New Zealand.</p>
             <div class="chips">
               <span class="chip">Approx. 45 min airport drive</span>
-              <span class="chip clay">International flights not booked by Southern Crossings</span>
+              <span class="chip clay">International departure</span>
             </div>
           </div>
         </article>
@@ -1111,7 +1067,7 @@
       <div class="stay-grid">
         <article class="stay-card">
           <h3>ROKI Collection Queenstown</h3>
-          <p>Waterfront Queenstown property with views across Lake Wakatipu to The Remarkables. The proposal highlights 15 suites designed by Virginia Fisher, fireplaces, indulgent bathtubs, and separate walk-in wardrobes.</p>
+          <p>Waterfront Queenstown property with views across Lake Wakatipu to The Remarkables. The itinerary highlights 15 suites designed by Virginia Fisher, fireplaces, indulgent bathtubs, and separate walk-in wardrobes.</p>
         </article>
         <article class="stay-card">
           <h3>The Lindis Lodge</h3>
@@ -1123,107 +1079,28 @@
         </article>
         <article class="stay-card">
           <h3>Huka Lodge</h3>
-          <p>Iconic lodge founded in the 1920s on 17 manicured acres beside the Waikato River, upstream from Huka Falls. The proposal emphasizes river views, highly considered service, suites, cottages, and two exclusive private hideaways.</p>
+          <p>Iconic lodge founded in the 1920s on 17 manicured acres beside the Waikato River, upstream from Huka Falls. The itinerary emphasizes river views, highly considered service, suites, cottages, and two exclusive private hideaways.</p>
         </article>
         <article class="stay-card">
           <h3>Park Hyatt Auckland</h3>
           <p>Waterfront hotel on Wynyard Quarter's Lighter Basin, with Waitemata Harbour views, 195 rooms, four restaurants and bars, event spaces, a day spa, 25-metre infinity pool, and fitness centre.</p>
         </article>
       </div>
-    </section>
 
-    <section class="section" aria-labelledby="commercial-heading">
-      <div class="section-head">
-        <h2 id="commercial-heading">Commercial Details</h2>
-        <p>What the quoted land-only arrangement includes, excludes, and requires.</p>
-      </div>
-
-      <div class="detail-grid">
-        <article class="detail-card">
-          <h3>Included in NZD $101,800 total</h3>
-          <ul class="detail-list">
-            <li>Meet and greet on arrival.</li>
-            <li>Full-size automatic SUV rental vehicle, including daily insurance, unlimited kilometres, and accident excess reduction.</li>
-            <li>Accommodation and meals as specified in the itinerary.</li>
-            <li>Small-group Milford Sound fixed-wing flight excursion with shared nature cruise.</li>
-            <li>Small-group Dart River / Glenorchy wilderness jet boat excursion.</li>
-            <li>Guided horse trek and stargazing at The Lindis.</li>
-            <li>Private helicopter excursion to Aoraki/Mount Cook and Tasman Glacier, including picnic lunch.</li>
-            <li>Flockhill Lodge station/farm tour and horse riding experience.</li>
-            <li>Privately guided Waimangu Volcanic Valley walk.</li>
-            <li>Southern Crossings local guest support and after-hours emergency assistance.</li>
-            <li>New Zealand GST at 15%.</li>
-          </ul>
-        </article>
-
-        <article class="detail-card">
-          <h3>Not included or extra</h3>
-          <ul class="detail-list">
-            <li>Domestic flight from Auckland to Queenstown.</li>
-            <li>Domestic flight from Christchurch to Rotorua.</li>
-            <li>International flights, which Southern Crossings does not book.</li>
-            <li>Optional activities listed for leisure days unless later confirmed and priced.</li>
-            <li>Direct-settle items such as lunch in Glenorchy.</li>
-            <li>Domestic flight booking assistance, if requested from Southern Crossings, adds a one-off NZD $500 per-group booking service fee plus flight costs.</li>
-            <li>Credit card processing fees of approximately 2-3% for Visa, MasterCard, or American Express payments.</li>
-          </ul>
-        </article>
-
-        <article class="detail-card">
-          <h3>Payment and availability</h3>
-          <ul class="detail-list">
-            <li>A 25% deposit is required once the itinerary is confirmed.</li>
-            <li>Full payment is due 60 days before travel.</li>
-            <li>No arrangements were being held at the time of the June 29, 2026 proposal.</li>
-            <li>Services and pricing remain subject to availability at booking.</li>
-            <li>Some components use dynamic pricing, so quoted rates may change before confirmation.</li>
-            <li>Special-event or festive booking conditions may require additional supplier deposits.</li>
-            <li>Southern Crossings prefers Flywire for secure bank transfer or credit card payment in your home currency.</li>
-          </ul>
-        </article>
-
-        <article class="detail-card">
-          <h3>Travel admin</h3>
-          <ul class="detail-list">
-            <li>Non-New Zealand and non-Australian passport holders need a passport valid for at least three months beyond intended departure from New Zealand.</li>
-            <li>Eligible international visitors must apply for an <a href="https://www.immigration.govt.nz/visas/new-zealand-electronic-travel-authority-nzeta/">NZeTA</a> before travel.</li>
-            <li>Most international visitors pay the NZD $100 International Visitor Conservation and Tourism Levy as part of the NZeTA application.</li>
-            <li>Travellers transiting New Zealand may need a transit visa in advance.</li>
-            <li>Travellers, except New Zealand and Australian passport holders, complete a <a href="https://www.travellerdeclaration.govt.nz/">New Zealand Traveller Declaration</a>, available online within 24 hours before arrival or as a paper onboard form.</li>
-            <li>No mandatory vaccinations were required based on the government regulations cited in the proposal.</li>
-            <li>Southern Crossings recommends comprehensive health and travel insurance.</li>
-            <li>Visitors can drive with a valid overseas licence. If the licence is not in English, carry an International Driving Permit or official English translation.</li>
-          </ul>
-        </article>
-      </div>
-
-      <div class="note-band">
-        <h3>Flockhill routing note</h3>
-        <p>Southern Crossings confirmed that Flockhill no longer offers the excursion across to the West Coast of the South Island, so it is not included in this proposed itinerary.</p>
-      </div>
     </section>
 
     <section class="section" aria-labelledby="season-heading">
       <div class="section-head">
-        <h2 id="season-heading">Season And Reference Links</h2>
-        <p>Planning notes from Southern Crossings.</p>
+        <h2 id="season-heading">Season Notes</h2>
+        <p>Planning context from Southern Crossings.</p>
       </div>
-      <div class="detail-grid">
-        <article class="detail-card">
-          <h3>Late September and early October</h3>
-          <p>Southern Crossings describes this as a lovely spring travel window: fresh green landscapes, lengthening days, crisp alpine scenery, comfortable daytime temperatures, and fewer crowds than peak summer. South Island alpine weather can still be changeable, while the North Island is generally becoming milder and more settled.</p>
-        </article>
-        <article class="detail-card">
-          <h3>Reference documents</h3>
-          <ul class="detail-list">
-            <li><a href="https://southern-crossings.com/pdf/NZ%20Climate%20Guide.pdf">New Zealand climate guide</a></li>
-            <li><a href="https://southern-crossings.com/pdf/nztandcdirect.pdf">Southern Crossings terms and conditions</a></li>
-          </ul>
-        </article>
-      </div>
+      <article class="detail-card">
+        <h3>Late September and early October</h3>
+        <p>Southern Crossings describes this as a lovely spring travel window: fresh green landscapes, lengthening days, crisp alpine scenery, comfortable daytime temperatures, and fewer crowds than peak summer. South Island alpine weather can still be changeable, while the North Island is generally becoming milder and more settled.</p>
+      </article>
     </section>
 
-    <p class="footer">Built from the Southern Crossings email and attached itinerary. Domestic and international flights should be confirmed separately before treating timings as final.</p>
+    <p class="footer">Built from the Southern Crossings itinerary. Domestic and international flight timings should be confirmed separately before treating them as final.</p>
   </main>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>

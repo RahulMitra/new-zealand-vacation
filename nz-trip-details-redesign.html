@@ -1643,11 +1643,11 @@
             </div>
 
             <div class="terrain-choices" id="drive-choices" role="tabpanel" aria-labelledby="drive-mode" hidden>
-              <button class="terrain-choice" type="button" data-drive="roki-lindis" aria-selected="true"><b>A</b><span><strong>Queenstown → The Lindis</strong><small>Crown Range, Wanaka and Lindis Pass</small></span><span>168 km</span></button>
-              <button class="terrain-choice" type="button" data-drive="lindis-flockhill" aria-selected="false"><b>B</b><span><strong>The Lindis → Flockhill</strong><small>Twizel, Tekapo and inland Canterbury</small></span><span>356 km</span></button>
-              <button class="terrain-choice" type="button" data-drive="flockhill-chc" aria-selected="false"><b>C</b><span><strong>Flockhill → Christchurch</strong><small>Arthur's Pass to Christchurch Airport</small></span><span>107 km</span></button>
-              <button class="terrain-choice" type="button" data-drive="rot-huka" aria-selected="false"><b>D</b><span><strong>Rotorua → Huka Lodge</strong><small>State Highway 5 to Taupo</small></span><span>78 km</span></button>
-              <button class="terrain-choice" type="button" data-drive="huka-park-hyatt" aria-selected="false"><b>E</b><span><strong>Huka Lodge → Auckland</strong><small>Waikato to Wynyard Quarter</small></span><span>269 km</span></button>
+              <button class="terrain-choice" type="button" data-drive="roki-lindis" aria-selected="true"><b>A</b><span><strong>Queenstown → The Lindis</strong><small>Crown Range, Wanaka and Lindis Pass</small></span><span>104 mi · ~2h 30m</span></button>
+              <button class="terrain-choice" type="button" data-drive="lindis-flockhill" aria-selected="false"><b>B</b><span><strong>The Lindis → Flockhill</strong><small>Twizel, Tekapo and inland Canterbury</small></span><span>221 mi · ~5h 30m</span></button>
+              <button class="terrain-choice" type="button" data-drive="flockhill-chc" aria-selected="false"><b>C</b><span><strong>Flockhill → Christchurch</strong><small>Arthur's Pass to Christchurch Airport</small></span><span>67 mi · ~1h 30m</span></button>
+              <button class="terrain-choice" type="button" data-drive="rot-huka" aria-selected="false"><b>D</b><span><strong>Rotorua → Huka Lodge</strong><small>State Highway 5 to Taupo</small></span><span>48 mi · ~1h</span></button>
+              <button class="terrain-choice" type="button" data-drive="huka-park-hyatt" aria-selected="false"><b>E</b><span><strong>Huka Lodge → Auckland</strong><small>Waikato to Wynyard Quarter</small></span><span>167 mi · ~4h</span></button>
             </div>
 
             <div class="drive-player" id="drive-player" hidden>
@@ -1656,7 +1656,7 @@
                 <button class="drive-button" id="drive-reset" type="button">Reset</button>
               </div>
               <div class="drive-progress" aria-hidden="true"><span id="drive-progress-fill"></span></div>
-              <div class="drive-progress-label"><span id="drive-progress-label">Start</span><span id="drive-progress-distance">0 km</span></div>
+              <div class="drive-progress-label"><span id="drive-progress-label">Start</span><span id="drive-progress-distance">0 mi</span></div>
             </div>
 
             <div class="terrain-detail" aria-live="polite">
@@ -1999,11 +1999,11 @@
       };
 
       var driveMeta = {
-        "roki-lindis": { title: "Queenstown to The Lindis", kicker: "Drive A · 168 km · about 2 hr 30 min", copy: "Routed through the Crown Range, Wanaka and Lindis Pass." },
-        "lindis-flockhill": { title: "The Lindis to Flockhill Lodge", kicker: "Drive B · 356 km · about 5 hr 30 min", copy: "Routed via Twizel, Lake Tekapo and inland Canterbury." },
-        "flockhill-chc": { title: "Flockhill Lodge to Christchurch", kicker: "Drive C · 107 km · about 1 hr 30 min", copy: "Routed from Arthur's Pass to Christchurch Airport for the Rotorua flight." },
-        "rot-huka": { title: "Rotorua to Huka Lodge", kicker: "Drive D · 78 km · about 1 hr", copy: "Routed south on State Highway 5 to Taupo." },
-        "huka-park-hyatt": { title: "Huka Lodge to Park Hyatt Auckland", kicker: "Drive E · 269 km · about 4 hr", copy: "Routed north through the Waikato to Auckland's Wynyard Quarter." }
+        "roki-lindis": { title: "Queenstown to The Lindis", kicker: "Drive A · 104 mi · estimated 2 hr 30 min", copy: "Routed through the Crown Range, Wanaka and Lindis Pass." },
+        "lindis-flockhill": { title: "The Lindis to Flockhill Lodge", kicker: "Drive B · 221 mi · estimated 5 hr 30 min", copy: "Routed via Twizel, Lake Tekapo and inland Canterbury." },
+        "flockhill-chc": { title: "Flockhill Lodge to Christchurch", kicker: "Drive C · 67 mi · estimated 1 hr 30 min", copy: "Routed from Arthur's Pass to Christchurch Airport for the Rotorua flight." },
+        "rot-huka": { title: "Rotorua to Huka Lodge", kicker: "Drive D · 48 mi · estimated 1 hr", copy: "Routed south on State Highway 5 to Taupo." },
+        "huka-park-hyatt": { title: "Huka Lodge to Park Hyatt Auckland", kicker: "Drive E · 167 mi · estimated 4 hr", copy: "Routed north through the Waikato to Auckland's Wynyard Quarter." }
       };
 
       var terrainMap = null;
@@ -2139,7 +2139,7 @@
         driveMarker.getElement().style.display = "block";
         progressFill.style.width = (animationProgress * 100).toFixed(1) + "%";
         progressLabel.textContent = animationProgress >= 1 ? "Arrived" : Math.round(animationProgress * 100) + "%";
-        progressDistance.textContent = Math.round((driveMetrics.total / 1000) * animationProgress) + " km";
+        progressDistance.textContent = Math.round((driveMetrics.total / 1609.344) * animationProgress) + " mi";
 
         if (moveCamera) {
           var ahead = pointAlong(driveMetrics, Math.min(1, animationProgress + .012)).point;
@@ -2179,7 +2179,7 @@
         animationProgress = 0;
         progressFill.style.width = "0";
         progressLabel.textContent = "Start";
-        progressDistance.textContent = "0 km";
+        progressDistance.textContent = "0 mi";
         setSelected("[data-drive]", "data-drive", id);
         setStayMarkerVisibility(false);
         var meta = driveMeta[id];

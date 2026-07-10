@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&amp;family=DM+Serif+Display:ital@0;1&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="vendor/maplibre-gl/maplibre-gl.css">
   <style>
     :root {
       --ink: #101916;
@@ -543,6 +544,328 @@
 
     .leaflet-bar { border: 0 !important; border-radius: 0 !important; box-shadow: 0 5px 18px rgba(16, 25, 22, .18) !important; }
     .leaflet-bar a { color: var(--ink) !important; background: var(--paper-light) !important; border-color: var(--line) !important; }
+
+    .terrain-section {
+      padding: clamp(90px, 12vw, 170px) 32px;
+      color: var(--white);
+      background: var(--ink);
+    }
+
+    .terrain-shell {
+      width: min(1380px, 100%);
+      margin: 0 auto;
+    }
+
+    .terrain-heading {
+      display: grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap: 60px;
+      align-items: end;
+      margin-bottom: 48px;
+    }
+
+    .terrain-heading h2 {
+      max-width: 880px;
+      margin: 0;
+      font-family: var(--display);
+      font-size: clamp(3.5rem, 7vw, 7rem);
+      font-weight: 400;
+      letter-spacing: -.045em;
+      line-height: .9;
+    }
+
+    .terrain-heading > p:last-child {
+      margin: 0;
+      color: rgba(255, 255, 255, .58);
+      font-size: .88rem;
+    }
+
+    .terrain-explorer {
+      display: grid;
+      grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
+      min-height: 760px;
+      border: 1px solid rgba(255, 255, 255, .2);
+      background: #14201c;
+    }
+
+    .terrain-sidebar {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding: 24px;
+      border-right: 1px solid rgba(255, 255, 255, .18);
+      background: #14201c;
+    }
+
+    .terrain-modes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      padding: 5px;
+      background: rgba(255, 255, 255, .08);
+    }
+
+    .terrain-mode {
+      min-height: 42px;
+      border: 0;
+      color: rgba(255, 255, 255, .56);
+      background: transparent;
+      font: inherit;
+      font-size: .68rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .terrain-mode:hover,
+    .terrain-mode:focus-visible { color: var(--white); outline: 1px solid rgba(255, 255, 255, .35); }
+
+    .terrain-mode[aria-selected="true"] {
+      color: var(--ink);
+      background: var(--sun);
+    }
+
+    .terrain-list-label {
+      margin: 28px 0 12px;
+      color: rgba(255, 255, 255, .42);
+      font-size: .61rem;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .terrain-choices {
+      display: grid;
+      gap: 4px;
+    }
+
+    .terrain-choices[hidden],
+    .drive-player[hidden] { display: none; }
+
+    .terrain-choice {
+      display: grid;
+      grid-template-columns: 34px 1fr auto;
+      gap: 11px;
+      align-items: center;
+      width: 100%;
+      min-height: 60px;
+      padding: 9px 10px;
+      border: 1px solid transparent;
+      color: rgba(255, 255, 255, .7);
+      background: transparent;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      transition: background .18s ease, border-color .18s ease, color .18s ease;
+    }
+
+    .terrain-choice:hover,
+    .terrain-choice:focus-visible {
+      color: var(--white);
+      border-color: rgba(255, 255, 255, .24);
+      outline: none;
+    }
+
+    .terrain-choice[aria-selected="true"] {
+      color: var(--white);
+      border-color: rgba(255, 255, 255, .3);
+      background: rgba(255, 255, 255, .09);
+    }
+
+    .terrain-choice b {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, .35);
+      border-radius: 50%;
+      font-family: var(--display);
+      font-size: .8rem;
+      font-weight: 400;
+    }
+
+    .terrain-choice strong {
+      display: block;
+      font-size: .82rem;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+
+    .terrain-choice small {
+      display: block;
+      margin-top: 3px;
+      color: rgba(255, 255, 255, .42);
+      font-size: .65rem;
+      line-height: 1.25;
+    }
+
+    .terrain-choice > span:last-child {
+      color: var(--fern);
+      font-size: .62rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .terrain-detail {
+      margin-top: auto;
+      padding-top: 22px;
+      border-top: 1px solid rgba(255, 255, 255, .16);
+    }
+
+    .terrain-detail span {
+      display: block;
+      color: var(--fern);
+      font-size: .62rem;
+      font-weight: 600;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    .terrain-detail h3 {
+      margin: 8px 0 0;
+      font-family: var(--display);
+      font-size: 1.65rem;
+      font-weight: 400;
+      line-height: 1.05;
+    }
+
+    .terrain-detail p {
+      margin: 10px 0 0;
+      color: rgba(255, 255, 255, .56);
+      font-size: .76rem;
+    }
+
+    .drive-player {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, .16);
+    }
+
+    .drive-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .drive-button {
+      min-height: 38px;
+      padding: 8px 13px;
+      border: 1px solid rgba(255, 255, 255, .28);
+      color: var(--white);
+      background: transparent;
+      font: inherit;
+      font-size: .68rem;
+      font-weight: 600;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .drive-button.primary { color: var(--ink); border-color: var(--sun); background: var(--sun); }
+    .drive-button:hover, .drive-button:focus-visible { border-color: var(--white); outline: none; }
+    .drive-button:disabled { cursor: not-allowed; opacity: .45; }
+
+    .drive-progress {
+      height: 4px;
+      margin-top: 15px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, .12);
+    }
+
+    .drive-progress span {
+      display: block;
+      width: 0;
+      height: 100%;
+      background: var(--sun);
+      transition: width .1s linear;
+    }
+
+    .drive-progress-label {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 7px;
+      color: rgba(255, 255, 255, .42);
+      font-size: .61rem;
+    }
+
+    .terrain-map-wrap {
+      position: relative;
+      min-width: 0;
+      min-height: 760px;
+      overflow: hidden;
+      background: #263832;
+    }
+
+    #terrain-map {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .terrain-status,
+    .terrain-fallback {
+      position: absolute;
+      z-index: 5;
+      left: 18px;
+      bottom: 18px;
+      max-width: min(420px, calc(100% - 36px));
+      padding: 11px 13px;
+      border: 1px solid rgba(255, 255, 255, .22);
+      color: rgba(255, 255, 255, .78);
+      background: rgba(16, 25, 22, .82);
+      backdrop-filter: blur(10px);
+      font-size: .68rem;
+    }
+
+    .terrain-status[hidden],
+    .terrain-fallback[hidden] { display: none; }
+
+    .terrain-fallback {
+      inset: 0;
+      max-width: none;
+      display: grid;
+      place-items: center;
+      padding: 40px;
+      background:
+        linear-gradient(rgba(16, 25, 22, .7), rgba(16, 25, 22, .88)),
+        url("assets/trip-detail-redesign/ahuriri-valley.jpg") center / cover;
+      text-align: center;
+    }
+
+    .terrain-fallback p { max-width: 430px; margin: 0; }
+
+    .maplibregl-ctrl-group {
+      overflow: hidden;
+      border: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: 0 8px 24px rgba(16, 25, 22, .24) !important;
+    }
+
+    .maplibregl-ctrl-group button { background-color: var(--paper-light); }
+    .maplibregl-ctrl-attrib { color: var(--ink); background: rgba(250, 248, 241, .8) !important; font-size: 10px; }
+    .maplibregl-marker { pointer-events: none; }
+
+    .terrain-pin {
+      width: 22px;
+      height: 22px;
+      border: 3px solid var(--white);
+      border-radius: 50%;
+      background: var(--clay);
+      box-shadow: 0 0 0 7px rgba(198, 102, 66, .22), 0 7px 20px rgba(16, 25, 22, .35);
+    }
+
+    .drive-dot {
+      width: 18px;
+      height: 18px;
+      border: 3px solid var(--white);
+      border-radius: 50%;
+      background: var(--sun);
+      box-shadow: 0 0 0 8px rgba(233, 185, 93, .24), 0 7px 20px rgba(16, 25, 22, .35);
+    }
 
     .chapter {
       --accent: var(--moss);
@@ -1131,6 +1454,7 @@
       .days { grid-template-columns: repeat(3, 1fr); }
       .stay-list { grid-template-columns: repeat(3, 1fr); }
       .stay:nth-last-child(-n+2) { min-height: 300px; }
+      .terrain-explorer { grid-template-columns: 310px minmax(0, 1fr); }
     }
 
     @media (max-width: 820px) {
@@ -1155,6 +1479,14 @@
       .map-stops { display: grid; grid-template-columns: repeat(2, 1fr); }
       .map-note { grid-template-columns: 1fr; gap: 6px; }
       .map-note span:last-child { white-space: normal; }
+      .terrain-section { padding-left: 18px; padding-right: 18px; }
+      .terrain-heading { grid-template-columns: 1fr; gap: 24px; }
+      .terrain-explorer { grid-template-columns: 1fr; }
+      .terrain-sidebar { border-right: 0; border-bottom: 1px solid rgba(255, 255, 255, .18); }
+      .terrain-map-wrap { min-height: 640px; }
+      .terrain-choices { grid-template-columns: repeat(5, minmax(230px, 1fr)); overflow-x: auto; padding-bottom: 8px; }
+      #drive-choices { grid-template-columns: repeat(5, minmax(260px, 1fr)); }
+      .terrain-detail { margin-top: 24px; }
       .chapter, .chapter:nth-of-type(even) { display: flex; flex-direction: column; min-height: 0; }
       .chapter-media, .chapter:nth-of-type(even) .chapter-media { position: relative; order: 1; width: 100%; height: 72svh; min-height: 520px; }
       .chapter-copy, .chapter:nth-of-type(even) .chapter-copy { order: 2; padding: 76px 30px 88px; }
@@ -1179,6 +1511,8 @@
       .chapter-meta div + div { padding-top: 16px; border-top: 1px solid var(--line); }
       .media-label strong { display: none; }
       .map-stops { grid-template-columns: 1fr; }
+      .terrain-map-wrap { min-height: 540px; }
+      .terrain-sidebar { padding: 18px; }
       .field-guide, .lodgings { padding-left: 18px; padding-right: 18px; }
       .days, .stay-list { grid-template-columns: 1fr; }
       .day { min-height: 260px; }
@@ -1192,11 +1526,13 @@
       html { scroll-behavior: auto; }
       *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
       .reveal { opacity: 1; transform: none; }
+      .drive-progress span { transition: none; }
     }
 
     @media print {
       .progress, .topbar, .scroll-cue, .filters { display: none; }
       .hero, .pullquote, .finale { min-height: 650px; }
+      .terrain-section { display: none; }
       .chapter { break-inside: avoid; }
       .chapter-media { position: relative; height: 600px; }
       .day[hidden] { display: flex; }
@@ -1275,7 +1611,66 @@
             <span><b style="background:#77628a">4</b>Taupo · Huka Lodge · 3 nights</span>
             <span><b style="background:#2d6247">5</b>Auckland · Park Hyatt · 1 night</span>
           </div>
-          <p class="map-note"><span>Map positions are approximate. Lines indicate itinerary sequence; road lines do not represent turn-by-turn routing.</span><span>Map data © OpenStreetMap · CARTO</span></p>
+          <p class="map-note"><span>Road lines follow routed highway geometry. Flight lines show the itinerary sequence. Property pins are approximate.</span><span>Map and routing data © OpenStreetMap · CARTO</span></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="terrain-section" id="terrain-explorer" aria-labelledby="terrain-title">
+      <div class="terrain-shell">
+        <header class="terrain-heading reveal">
+          <div>
+            <p class="eyebrow">3D terrain and drive explorer</p>
+            <h2 id="terrain-title">Inspect every stay. Follow every road.</h2>
+          </div>
+          <p>Switch between the five overnight properties and five routed drives. Property views use an angled 3D terrain camera; drive views use the actual road geometry and can be played as a guided flyover.</p>
+        </header>
+
+        <div class="terrain-explorer">
+          <aside class="terrain-sidebar" aria-label="3D map controls">
+            <div class="terrain-modes" role="tablist" aria-label="Explorer mode">
+              <button class="terrain-mode" id="stay-mode" type="button" role="tab" aria-selected="true" aria-controls="stay-choices">Stays</button>
+              <button class="terrain-mode" id="drive-mode" type="button" role="tab" aria-selected="false" aria-controls="drive-choices">Drives</button>
+            </div>
+
+            <p class="terrain-list-label" id="terrain-list-label">Select a property</p>
+            <div class="terrain-choices" id="stay-choices" role="tabpanel" aria-labelledby="stay-mode">
+              <button class="terrain-choice" type="button" data-stay="roki" aria-selected="true"><b>1</b><span><strong>ROKI Collection</strong><small>Queenstown · Lake Wakatipu</small></span><span>4 nights</span></button>
+              <button class="terrain-choice" type="button" data-stay="lindis" aria-selected="false"><b>2</b><span><strong>The Lindis</strong><small>Ahuriri Valley · high country</small></span><span>4 nights</span></button>
+              <button class="terrain-choice" type="button" data-stay="flockhill" aria-selected="false"><b>3</b><span><strong>Flockhill Lodge</strong><small>Craigieburn Valley · Arthur's Pass</small></span><span>3 nights</span></button>
+              <button class="terrain-choice" type="button" data-stay="huka" aria-selected="false"><b>4</b><span><strong>Huka Lodge</strong><small>Waikato River · Taupo</small></span><span>3 nights</span></button>
+              <button class="terrain-choice" type="button" data-stay="park-hyatt" aria-selected="false"><b>5</b><span><strong>Park Hyatt</strong><small>Wynyard Quarter · Auckland</small></span><span>1 night</span></button>
+            </div>
+
+            <div class="terrain-choices" id="drive-choices" role="tabpanel" aria-labelledby="drive-mode" hidden>
+              <button class="terrain-choice" type="button" data-drive="roki-lindis" aria-selected="true"><b>A</b><span><strong>Queenstown → The Lindis</strong><small>Crown Range, Wanaka and Lindis Pass</small></span><span>168 km</span></button>
+              <button class="terrain-choice" type="button" data-drive="lindis-flockhill" aria-selected="false"><b>B</b><span><strong>The Lindis → Flockhill</strong><small>Twizel, Tekapo and inland Canterbury</small></span><span>356 km</span></button>
+              <button class="terrain-choice" type="button" data-drive="flockhill-chc" aria-selected="false"><b>C</b><span><strong>Flockhill → Christchurch</strong><small>Arthur's Pass to Christchurch Airport</small></span><span>107 km</span></button>
+              <button class="terrain-choice" type="button" data-drive="rot-huka" aria-selected="false"><b>D</b><span><strong>Rotorua → Huka Lodge</strong><small>State Highway 5 to Taupo</small></span><span>78 km</span></button>
+              <button class="terrain-choice" type="button" data-drive="huka-park-hyatt" aria-selected="false"><b>E</b><span><strong>Huka Lodge → Auckland</strong><small>Waikato to Wynyard Quarter</small></span><span>269 km</span></button>
+            </div>
+
+            <div class="drive-player" id="drive-player" hidden>
+              <div class="drive-actions">
+                <button class="drive-button primary" id="drive-play" type="button">Play drive</button>
+                <button class="drive-button" id="drive-reset" type="button">Reset</button>
+              </div>
+              <div class="drive-progress" aria-hidden="true"><span id="drive-progress-fill"></span></div>
+              <div class="drive-progress-label"><span id="drive-progress-label">Start</span><span id="drive-progress-distance">0 km</span></div>
+            </div>
+
+            <div class="terrain-detail" aria-live="polite">
+              <span id="terrain-detail-kicker">Stay 1 of 5 · 4 nights</span>
+              <h3 id="terrain-detail-title">ROKI Collection Queenstown</h3>
+              <p id="terrain-detail-copy">King One Bedroom Suite on Lake Wakatipu. Breakfast included. Use the map controls to rotate, pitch and zoom the terrain.</p>
+            </div>
+          </aside>
+
+          <div class="terrain-map-wrap">
+            <div id="terrain-map" role="img" aria-label="Interactive 3D terrain map showing the selected New Zealand property or drive"></div>
+            <div class="terrain-status" id="terrain-status" role="status">Loading 3D terrain…</div>
+            <div class="terrain-fallback" id="terrain-fallback" hidden><p>3D terrain could not load in this browser. The route map and day-by-day drive details remain available above and below.</p></div>
+          </div>
         </div>
       </div>
     </section>
@@ -1484,6 +1879,11 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script>
+    window.tripRoutePromise = fetch("data/journey-route-web.geojson").then(function (response) {
+      if (!response.ok) throw new Error("Route data could not be loaded.");
+      return response.json();
+    });
+
     (function () {
       var stops = [
         { id: "AKL", label: "Auckland arrival", sub: "Airside meet and domestic connection", lat: -36.8485, lng: 174.7633, color: "#426a8c", tipDirection: "right", tipOffset: [18, 0] },
@@ -1510,10 +1910,16 @@
       var roadStyle = { color: "#234f3c", weight: 4, opacity: .86 };
       var flightStyle = { color: "#426a8c", weight: 3, opacity: .84, dashArray: "8 10" };
 
-      L.polyline([latLng(stops[0]), latLng(stops[1])], flightStyle).addTo(map);
-      L.polyline([latLng(stops[1]), latLng(stops[2]), latLng(stops[3]), latLng(stops[4])], roadStyle).addTo(map);
-      L.polyline([latLng(stops[4]), latLng(stops[5])], flightStyle).addTo(map);
-      L.polyline([latLng(stops[5]), latLng(stops[6]), latLng(stops[7])], roadStyle).addTo(map);
+      window.tripRoutePromise.then(function (routeData) {
+        L.geoJSON(routeData, {
+          style: function (feature) { return feature.properties.kind === "flight" ? flightStyle : roadStyle; }
+        }).addTo(map);
+      }).catch(function () {
+        L.polyline([latLng(stops[0]), latLng(stops[1])], flightStyle).addTo(map);
+        L.polyline([latLng(stops[1]), latLng(stops[2]), latLng(stops[3]), latLng(stops[4])], roadStyle).addTo(map);
+        L.polyline([latLng(stops[4]), latLng(stops[5])], flightStyle).addTo(map);
+        L.polyline([latLng(stops[5]), latLng(stops[6]), latLng(stops[7])], roadStyle).addTo(map);
+      });
 
       stops.forEach(function (stop) {
         var icon = L.divIcon({
@@ -1534,6 +1940,383 @@
       });
 
       map.fitBounds(L.latLngBounds(stops.map(latLng)).pad(.04));
+    }());
+  </script>
+  <script src="vendor/maplibre-gl/maplibre-gl.js"></script>
+  <script>
+    (function () {
+      var mapElement = document.getElementById("terrain-map");
+      var statusElement = document.getElementById("terrain-status");
+      var fallbackElement = document.getElementById("terrain-fallback");
+      var stayModeButton = document.getElementById("stay-mode");
+      var driveModeButton = document.getElementById("drive-mode");
+      var stayChoices = document.getElementById("stay-choices");
+      var driveChoices = document.getElementById("drive-choices");
+      var listLabel = document.getElementById("terrain-list-label");
+      var drivePlayer = document.getElementById("drive-player");
+      var playButton = document.getElementById("drive-play");
+      var resetButton = document.getElementById("drive-reset");
+      var progressFill = document.getElementById("drive-progress-fill");
+      var progressLabel = document.getElementById("drive-progress-label");
+      var progressDistance = document.getElementById("drive-progress-distance");
+      var detailKicker = document.getElementById("terrain-detail-kicker");
+      var detailTitle = document.getElementById("terrain-detail-title");
+      var detailCopy = document.getElementById("terrain-detail-copy");
+      var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (mapElement) mapElement.dataset.state = "script-start";
+
+      var stayViews = {
+        roki: {
+          title: "ROKI Collection Queenstown",
+          kicker: "Stay 1 of 5 · 4 nights",
+          copy: "King One Bedroom Suite on Lake Wakatipu. Breakfast included. Rotate, pitch and zoom to inspect the surrounding terrain.",
+          center: [168.65498, -45.03409], zoom: 13.2, pitch: 67, bearing: 34
+        },
+        lindis: {
+          title: "The Lindis",
+          kicker: "Stay 2 of 5 · 4 nights",
+          copy: "King Master Suite in the Ahuriri Valley. Pre-dinner drinks and all meals included.",
+          center: [169.66083, -44.38944], zoom: 11.8, pitch: 69, bearing: -28
+        },
+        flockhill: {
+          title: "Flockhill Lodge",
+          kicker: "Stay 3 of 5 · 3 nights",
+          copy: "King One Bedroom Deluxe Villa in the Craigieburn Valley. Station tour and all meals included.",
+          center: [171.73831, -43.14586], zoom: 12.1, pitch: 70, bearing: 42
+        },
+        huka: {
+          title: "Huka Lodge",
+          kicker: "Stay 4 of 5 · 3 nights",
+          copy: "King Lodge Suite with Fireplace beside the Waikato River. Pre-dinner drinks, dinner and breakfast included.",
+          center: [176.08686, -38.65469], zoom: 13.3, pitch: 63, bearing: -18
+        },
+        "park-hyatt": {
+          title: "Park Hyatt Auckland",
+          kicker: "Stay 5 of 5 · 1 night",
+          copy: "King Harbour View Room with Balcony in Wynyard Quarter. Breakfast included.",
+          center: [174.75848, -36.84191], zoom: 15.4, pitch: 62, bearing: 25
+        }
+      };
+
+      var driveMeta = {
+        "roki-lindis": { title: "Queenstown to The Lindis", kicker: "Drive A · 168 km · about 2 hr 30 min", copy: "Routed through the Crown Range, Wanaka and Lindis Pass." },
+        "lindis-flockhill": { title: "The Lindis to Flockhill Lodge", kicker: "Drive B · 356 km · about 5 hr 30 min", copy: "Routed via Twizel, Lake Tekapo and inland Canterbury." },
+        "flockhill-chc": { title: "Flockhill Lodge to Christchurch", kicker: "Drive C · 107 km · about 1 hr 30 min", copy: "Routed from Arthur's Pass to Christchurch Airport for the Rotorua flight." },
+        "rot-huka": { title: "Rotorua to Huka Lodge", kicker: "Drive D · 78 km · about 1 hr", copy: "Routed south on State Highway 5 to Taupo." },
+        "huka-park-hyatt": { title: "Huka Lodge to Park Hyatt Auckland", kicker: "Drive E · 269 km · about 4 hr", copy: "Routed north through the Waikato to Auckland's Wynyard Quarter." }
+      };
+
+      var terrainMap = null;
+      var routeData = null;
+      var mapReady = false;
+      var activeMode = "stays";
+      var activeStay = "roki";
+      var activeDrive = "roki-lindis";
+      var driveMetrics = null;
+      var driveMarker = null;
+      var stayMarkers = [];
+      var animationFrame = null;
+      var animationProgress = 0;
+      var animationStartedAt = 0;
+      var animationDuration = 16000;
+      var lastCameraUpdate = 0;
+      var isPlaying = false;
+
+      function showFallback(message) {
+        statusElement.hidden = true;
+        fallbackElement.hidden = false;
+        if (message) fallbackElement.querySelector("p").textContent = message;
+      }
+
+      if (!mapElement || !window.maplibregl || (typeof maplibregl.supported === "function" && !maplibregl.supported())) {
+        if (mapElement) mapElement.dataset.state = "unsupported";
+        showFallback("3D terrain is not supported in this browser. The routed overview map and day-by-day drive details remain available.");
+        return;
+      }
+      mapElement.dataset.state = "supported";
+
+      function emptyCollection() { return { type: "FeatureCollection", features: [] }; }
+
+      function setSelected(selector, attribute, value) {
+        document.querySelectorAll(selector).forEach(function (button) {
+          button.setAttribute("aria-selected", String(button.getAttribute(attribute) === value));
+        });
+      }
+
+      function setDetail(kicker, title, copy) {
+        detailKicker.textContent = kicker;
+        detailTitle.textContent = title;
+        detailCopy.textContent = copy;
+      }
+
+      function setStayMarkerVisibility(visible) {
+        stayMarkers.forEach(function (marker) { marker.getElement().style.display = visible ? "block" : "none"; });
+      }
+
+      function clearDriveLayers() {
+        if (!mapReady) return;
+        terrainMap.getSource("active-drive").setData(emptyCollection());
+        terrainMap.getSource("drive-progress").setData(emptyCollection());
+        if (driveMarker) driveMarker.getElement().style.display = "none";
+      }
+
+      function stopDrive() {
+        isPlaying = false;
+        if (animationFrame) cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+        playButton.textContent = animationProgress > 0 && animationProgress < 1 ? "Resume drive" : "Play drive";
+      }
+
+      function showStay(id) {
+        activeStay = id;
+        stopDrive();
+        clearDriveLayers();
+        setSelected("[data-stay]", "data-stay", id);
+        setStayMarkerVisibility(true);
+        var view = stayViews[id];
+        setDetail(view.kicker, view.title, view.copy);
+        if (!mapReady) return;
+        terrainMap.flyTo({
+          center: view.center,
+          zoom: view.zoom,
+          pitch: view.pitch,
+          bearing: view.bearing,
+          duration: reducedMotion ? 0 : 1800,
+          essential: true
+        });
+      }
+
+      function haversine(a, b) {
+        var rad = Math.PI / 180;
+        var dLat = (b[1] - a[1]) * rad;
+        var dLng = (b[0] - a[0]) * rad;
+        var lat1 = a[1] * rad;
+        var lat2 = b[1] * rad;
+        var h = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        return 6371000 * 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+      }
+
+      function buildDriveMetrics(coordinates) {
+        var cumulative = [0];
+        for (var i = 1; i < coordinates.length; i += 1) cumulative.push(cumulative[i - 1] + haversine(coordinates[i - 1], coordinates[i]));
+        return { coordinates: coordinates, cumulative: cumulative, total: cumulative[cumulative.length - 1] };
+      }
+
+      function pointAlong(metrics, ratio) {
+        var target = metrics.total * Math.max(0, Math.min(1, ratio));
+        var index = 1;
+        while (index < metrics.cumulative.length && metrics.cumulative[index] < target) index += 1;
+        if (index >= metrics.coordinates.length) return { point: metrics.coordinates[metrics.coordinates.length - 1], index: metrics.coordinates.length - 1 };
+        var before = metrics.cumulative[index - 1];
+        var span = metrics.cumulative[index] - before || 1;
+        var local = (target - before) / span;
+        var a = metrics.coordinates[index - 1];
+        var b = metrics.coordinates[index];
+        return { point: [a[0] + (b[0] - a[0]) * local, a[1] + (b[1] - a[1]) * local], index: index };
+      }
+
+      function bearingBetween(a, b) {
+        var rad = Math.PI / 180;
+        var y = Math.sin((b[0] - a[0]) * rad) * Math.cos(b[1] * rad);
+        var x = Math.cos(a[1] * rad) * Math.sin(b[1] * rad) - Math.sin(a[1] * rad) * Math.cos(b[1] * rad) * Math.cos((b[0] - a[0]) * rad);
+        return Math.atan2(y, x) / rad;
+      }
+
+      function updateDriveProgress(ratio, moveCamera) {
+        if (!driveMetrics || !mapReady) return;
+        animationProgress = Math.max(0, Math.min(1, ratio));
+        var position = pointAlong(driveMetrics, animationProgress);
+        var lineCoordinates = driveMetrics.coordinates.slice(0, position.index);
+        lineCoordinates.push(position.point);
+        terrainMap.getSource("drive-progress").setData({ type: "Feature", properties: {}, geometry: { type: "LineString", coordinates: lineCoordinates } });
+        driveMarker.setLngLat(position.point);
+        driveMarker.getElement().style.display = "block";
+        progressFill.style.width = (animationProgress * 100).toFixed(1) + "%";
+        progressLabel.textContent = animationProgress >= 1 ? "Arrived" : Math.round(animationProgress * 100) + "%";
+        progressDistance.textContent = Math.round((driveMetrics.total / 1000) * animationProgress) + " km";
+
+        if (moveCamera) {
+          var ahead = pointAlong(driveMetrics, Math.min(1, animationProgress + .012)).point;
+          terrainMap.easeTo({
+            center: position.point,
+            zoom: activeDrive === "lindis-flockhill" || activeDrive === "huka-park-hyatt" ? 10.8 : 11.5,
+            pitch: 68,
+            bearing: bearingBetween(position.point, ahead),
+            duration: 650,
+            essential: true
+          });
+        }
+      }
+
+      function driveFrame(now) {
+        if (!isPlaying) return;
+        var ratio = Math.min(1, (now - animationStartedAt) / animationDuration);
+        var shouldMoveCamera = now - lastCameraUpdate > 600;
+        if (shouldMoveCamera) lastCameraUpdate = now;
+        updateDriveProgress(ratio, shouldMoveCamera);
+        if (ratio < 1) {
+          animationFrame = requestAnimationFrame(driveFrame);
+        } else {
+          isPlaying = false;
+          animationFrame = null;
+          playButton.textContent = "Replay drive";
+        }
+      }
+
+      function findDrive(id) {
+        return routeData && routeData.features.find(function (feature) { return feature.properties.id === id; });
+      }
+
+      function showDrive(id) {
+        activeDrive = id;
+        stopDrive();
+        animationProgress = 0;
+        progressFill.style.width = "0";
+        progressLabel.textContent = "Start";
+        progressDistance.textContent = "0 km";
+        setSelected("[data-drive]", "data-drive", id);
+        setStayMarkerVisibility(false);
+        var meta = driveMeta[id];
+        setDetail(meta.kicker, meta.title, meta.copy + " Press Play drive to follow the route in 3D.");
+        if (!mapReady || !routeData) return;
+        var feature = findDrive(id);
+        if (!feature) return;
+        driveMetrics = buildDriveMetrics(feature.geometry.coordinates);
+        terrainMap.getSource("active-drive").setData(feature);
+        terrainMap.getSource("drive-progress").setData(emptyCollection());
+        driveMarker.setLngLat(feature.geometry.coordinates[0]);
+        driveMarker.getElement().style.display = "block";
+
+        var bounds = new maplibregl.LngLatBounds(feature.geometry.coordinates[0], feature.geometry.coordinates[0]);
+        feature.geometry.coordinates.forEach(function (coordinate) { bounds.extend(coordinate); });
+        terrainMap.fitBounds(bounds, {
+          padding: window.innerWidth < 820 ? 36 : 70,
+          pitch: 58,
+          bearing: bearingBetween(feature.geometry.coordinates[0], feature.geometry.coordinates[feature.geometry.coordinates.length - 1]),
+          duration: reducedMotion ? 0 : 1700
+        });
+      }
+
+      function setMode(mode) {
+        activeMode = mode;
+        var showingStays = mode === "stays";
+        stayModeButton.setAttribute("aria-selected", String(showingStays));
+        driveModeButton.setAttribute("aria-selected", String(!showingStays));
+        stayChoices.hidden = !showingStays;
+        driveChoices.hidden = showingStays;
+        drivePlayer.hidden = showingStays;
+        listLabel.textContent = showingStays ? "Select a property" : "Select a drive";
+        if (showingStays) showStay(activeStay); else showDrive(activeDrive);
+      }
+
+      stayModeButton.addEventListener("click", function () { setMode("stays"); });
+      driveModeButton.addEventListener("click", function () { setMode("drives"); });
+      document.querySelectorAll("[data-stay]").forEach(function (button) { button.addEventListener("click", function () { showStay(button.dataset.stay); }); });
+      document.querySelectorAll("[data-drive]").forEach(function (button) { button.addEventListener("click", function () { showDrive(button.dataset.drive); }); });
+
+      playButton.addEventListener("click", function () {
+        if (!driveMetrics) return;
+        if (reducedMotion) {
+          updateDriveProgress(1, false);
+          playButton.textContent = "Route shown";
+          return;
+        }
+        if (animationProgress >= 1) {
+          showDrive(activeDrive);
+          animationProgress = 0;
+        }
+        if (isPlaying) {
+          stopDrive();
+          return;
+        }
+        isPlaying = true;
+        animationDuration = Math.max(14000, Math.min(26000, (driveMetrics.total / 1000) * 70));
+        animationStartedAt = performance.now() - animationProgress * animationDuration;
+        lastCameraUpdate = 0;
+        playButton.textContent = "Pause drive";
+        animationFrame = requestAnimationFrame(driveFrame);
+      });
+
+      resetButton.addEventListener("click", function () { showDrive(activeDrive); });
+
+      try {
+        terrainMap = new maplibregl.Map({
+          container: mapElement,
+          center: stayViews.roki.center,
+          zoom: stayViews.roki.zoom,
+          pitch: stayViews.roki.pitch,
+          bearing: stayViews.roki.bearing,
+          maxPitch: 80,
+          canvasContextAttributes: { antialias: true },
+          style: {
+            version: 8,
+            sources: {
+              osm: {
+                type: "raster",
+                tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+                tileSize: 256,
+                maxzoom: 19,
+                attribution: "© OpenStreetMap contributors"
+              },
+              terrainSource: { type: "raster-dem", url: "https://tiles.mapterhorn.com/tilejson.json", tileSize: 256 },
+              hillshadeSource: { type: "raster-dem", url: "https://tiles.mapterhorn.com/tilejson.json", tileSize: 256 }
+            },
+            layers: [
+              { id: "base", type: "background", paint: { "background-color": "#cfded8" } },
+              { id: "osm", type: "raster", source: "osm", paint: { "raster-saturation": -.35, "raster-contrast": .08 } },
+              { id: "hillshade", type: "hillshade", source: "hillshadeSource", paint: { "hillshade-shadow-color": "#183328", "hillshade-highlight-color": "#f5eedc", "hillshade-exaggeration": .42 } }
+            ],
+            terrain: { source: "terrainSource", exaggeration: 1.18 },
+            sky: { "sky-color": "#c8d8da", "horizon-color": "#f1eadb", "fog-color": "#d9e2df", "sky-horizon-blend": .62 }
+          }
+        });
+        mapElement.dataset.state = "created";
+
+        terrainMap.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), "top-right");
+
+        terrainMap.on("load", function () {
+          mapElement.dataset.state = "loaded";
+          terrainMap.addSource("active-drive", { type: "geojson", data: emptyCollection() });
+          terrainMap.addSource("drive-progress", { type: "geojson", data: emptyCollection() });
+          terrainMap.addLayer({ id: "drive-casing", type: "line", source: "active-drive", paint: { "line-color": "#fffef9", "line-width": 8, "line-opacity": .88 } });
+          terrainMap.addLayer({ id: "drive-route", type: "line", source: "active-drive", paint: { "line-color": "#234f3c", "line-width": 5, "line-opacity": .95 } });
+          terrainMap.addLayer({ id: "drive-travelled", type: "line", source: "drive-progress", paint: { "line-color": "#e9b95d", "line-width": 6, "line-opacity": 1 } });
+
+          Object.keys(stayViews).forEach(function (id) {
+            var pin = document.createElement("div");
+            pin.className = "terrain-pin";
+            pin.setAttribute("aria-hidden", "true");
+            stayMarkers.push(new maplibregl.Marker({ element: pin }).setLngLat(stayViews[id].center).addTo(terrainMap));
+          });
+
+          var driveDot = document.createElement("div");
+          driveDot.className = "drive-dot";
+          driveDot.setAttribute("aria-hidden", "true");
+          driveMarker = new maplibregl.Marker({ element: driveDot }).setLngLat(stayViews.roki.center).addTo(terrainMap);
+          driveMarker.getElement().style.display = "none";
+
+          mapReady = true;
+          statusElement.hidden = true;
+          showStay(activeStay);
+          if (activeMode === "drives" && routeData) showDrive(activeDrive);
+        });
+
+        terrainMap.on("webglcontextlost", function () { showFallback("The 3D map lost its graphics context. Reload the page to restore it; the routed overview map remains available."); });
+      } catch (error) {
+        mapElement.dataset.state = "error";
+        showFallback("3D terrain could not initialize in this browser. The routed overview map and drive details remain available.");
+      }
+
+      window.tripRoutePromise.then(function (data) {
+        routeData = data;
+        if (activeMode === "drives" && mapReady) showDrive(activeDrive);
+      }).catch(function () {
+        playButton.disabled = true;
+        resetButton.disabled = true;
+        detailCopy.textContent = "The routed drive data could not be loaded. The stay views remain available.";
+      });
+
+      window.addEventListener("resize", function () { if (terrainMap) terrainMap.resize(); });
     }());
   </script>
   <script>

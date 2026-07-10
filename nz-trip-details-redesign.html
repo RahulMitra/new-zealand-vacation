@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&amp;family=DM+Serif+Display:ital@0;1&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="vendor/maplibre-gl/maplibre-gl.css">
+  <link rel="stylesheet" href="vendor/maplibre-gl/maplibre-gl.css?v=5.24.0">
   <style>
     :root {
       --ink: #101916;
@@ -1942,7 +1942,7 @@
       map.fitBounds(L.latLngBounds(stops.map(latLng)).pad(.04));
     }());
   </script>
-  <script src="vendor/maplibre-gl/maplibre-gl.js"></script>
+  <script src="vendor/maplibre-gl/maplibre-gl.js?v=5.24.0"></script>
   <script>
     (function () {
       var mapElement = document.getElementById("terrain-map");
@@ -2028,8 +2028,14 @@
         if (message) fallbackElement.querySelector("p").textContent = message;
       }
 
-      if (!mapElement || !window.maplibregl || (typeof maplibregl.supported === "function" && !maplibregl.supported())) {
-        if (mapElement) mapElement.dataset.state = "unsupported";
+      if (!mapElement || !window.maplibregl) {
+        if (mapElement) mapElement.dataset.state = "runtime-missing";
+        showFallback("The 3D map runtime did not load. The routed overview map and day-by-day drive details remain available.");
+        return;
+      }
+
+      if (typeof maplibregl.supported === "function" && !maplibregl.supported()) {
+        mapElement.dataset.state = "unsupported";
         showFallback("3D terrain is not supported in this browser. The routed overview map and day-by-day drive details remain available.");
         return;
       }
